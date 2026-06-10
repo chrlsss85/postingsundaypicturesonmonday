@@ -69,30 +69,21 @@ export default function AdminPage() {
     setLoading(false);
   };
 
-  const generateToken = async () => {
+const generateToken = async () => {
     if (!newSlug.trim()) {
       alert('Enter a contributor name first');
       return;
     }
 
-    const token = Math.random().toString(36).substring(2, 10) +
-      Math.random().toString(36).substring(2, 10);
-    const slug = newSlug.toLowerCase().trim().replace(/[^a-z0-9]/g, '') +
-      '-' + Math.random().toString(36).substring(2, 6);
+    const res = await fetch('/api/generate-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contributorName: newSlug }),
+    });
 
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
+    const data = await res.json();
 
-    const { error } = await supabase
-      .from('upload_tokens')
-      .insert({
-        token,
-        slug,
-        used: false,
-        expires_at: expiresAt.toISOString(),
-      });
-
-    if (error) {
+    if (!data.success) {
       alert('Failed to generate token');
       return;
     }
