@@ -70,11 +70,37 @@ export default function AdminPage() {
   };
 
 const generateToken = async () => {
-    alert('Function started: ' + newSlug);
     if (!newSlug.trim()) {
       alert('Enter a contributor name first');
       return;
     }
+
+    alert('About to call API...');
+
+    try {
+      const res = await fetch('/api/generate-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contributorName: newSlug }),
+      });
+
+      alert('Response status: ' + res.status);
+
+      const data = await res.json();
+
+      alert('Response data: ' + JSON.stringify(data));
+
+      if (!data.success) {
+        alert('Failed: ' + (data.error || 'unknown error'));
+        return;
+      }
+
+      setNewSlug('');
+      loadData();
+    } catch (err) {
+      alert('Caught error: ' + err);
+    }
+  };
 
     const res = await fetch('/api/generate-token', {
       method: 'POST',
