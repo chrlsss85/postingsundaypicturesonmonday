@@ -75,7 +75,8 @@ export default function AdminPage() {
       return;
     }
 
-    try {
+try {
+      console.log('Sending request with name:', newSlug);
       const res = await fetch('/api/generate-token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -83,6 +84,7 @@ export default function AdminPage() {
       });
 
       const data = await res.json();
+      console.log('Got response:', data);
 
       if (!data.success) {
         alert('Failed: ' + (data.error || 'unknown error'));
@@ -94,7 +96,6 @@ export default function AdminPage() {
     } catch (err) {
       alert('Error: ' + err);
     }
-  };
 
   const copyLink = (token: string) => {
     const url = `${window.location.origin}/upload/${token}`;
