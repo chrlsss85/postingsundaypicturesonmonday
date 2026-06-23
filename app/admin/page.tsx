@@ -70,6 +70,7 @@ export default function AdminPage() {
   };
 
 const generateToken = async () => {
+    alert('Function started: ' + newSlug);
     if (!newSlug.trim()) {
       alert('Enter a contributor name first');
       return;
