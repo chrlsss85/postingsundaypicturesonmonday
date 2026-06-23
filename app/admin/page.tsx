@@ -69,13 +69,11 @@ export default function AdminPage() {
     setLoading(false);
   };
 
-const generateToken = async () => {
+  const generateToken = async () => {
     if (!newSlug.trim()) {
       alert('Enter a contributor name first');
       return;
     }
-
-    alert('About to call API...');
 
     try {
       const res = await fetch('/api/generate-token', {
@@ -84,11 +82,7 @@ const generateToken = async () => {
         body: JSON.stringify({ contributorName: newSlug }),
       });
 
-      alert('Response status: ' + res.status);
-
       const data = await res.json();
-
-      alert('Response data: ' + JSON.stringify(data));
 
       if (!data.success) {
         alert('Failed: ' + (data.error || 'unknown error'));
@@ -98,25 +92,8 @@ const generateToken = async () => {
       setNewSlug('');
       loadData();
     } catch (err) {
-      alert('Caught error: ' + err);
+      alert('Error: ' + err);
     }
-  };
-
-    const res = await fetch('/api/generate-token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contributorName: newSlug }),
-    });
-
-    const data = await res.json();
-
-    if (!data.success) {
-      alert('Failed to generate token');
-      return;
-    }
-
-    setNewSlug('');
-    loadData();
   };
 
   const copyLink = (token: string) => {
@@ -172,7 +149,6 @@ const generateToken = async () => {
           >sign out</button>
         </div>
 
-        {/* Generate new token */}
         <div style={styles.section}>
           <p style={styles.sectionTitle}>generate contributor link</p>
           <div style={styles.row}>
@@ -190,7 +166,6 @@ const generateToken = async () => {
           </div>
         </div>
 
-        {/* Active tokens */}
         <div style={styles.section}>
           <p style={styles.sectionTitle}>contributor links</p>
           {loading && <p style={styles.empty}>loading...</p>}
@@ -208,17 +183,11 @@ const generateToken = async () => {
               </div>
               <div style={styles.tokenActions}>
                 {!t.used && (
-                  <button
-                    onClick={() => copyLink(t.token)}
-                    style={styles.copyBtn}
-                  >
+                  <button onClick={() => copyLink(t.token)} style={styles.copyBtn}>
                     {copied === t.token ? '✓' : 'copy'}
                   </button>
                 )}
-                <button
-                  onClick={() => revokeToken(t.id)}
-                  style={styles.revokeBtn}
-                >
+                <button onClick={() => revokeToken(t.id)} style={styles.revokeBtn}>
                   revoke
                 </button>
               </div>
@@ -226,9 +195,8 @@ const generateToken = async () => {
           ))}
         </div>
 
-        {/* Active posts */}
         <div style={styles.section}>
-          <p style={styles.sectionTitle}>this week's posts</p>
+          <p style={styles.sectionTitle}>this week&apos;s posts</p>
           {!loading && posts.length === 0 && (
             <p style={styles.empty}>no posts yet</p>
           )}
@@ -242,15 +210,9 @@ const generateToken = async () => {
                 </p>
               </div>
               <div style={styles.tokenActions}>
-                <button
-                  onClick={() => router.push(`/s/${p.slug}`)}
-                  style={styles.copyBtn}
-                >view</button>
+                <button onClick={() => router.push(`/s/${p.slug}`)} style={styles.copyBtn}>view</button>
                 {p.is_live && (
-                  <button
-                    onClick={() => wipePost(p.id)}
-                    style={styles.revokeBtn}
-                  >wipe</button>
+                  <button onClick={() => wipePost(p.id)} style={styles.revokeBtn}>wipe</button>
                 )}
               </div>
             </div>
@@ -266,165 +228,26 @@ const generateToken = async () => {
 }
 
 const styles: Record<string, React.CSSProperties> = {
-  container: {
-    minHeight: '100vh',
-    background: '#0e0e0e',
-    display: 'flex',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    padding: '40px 20px',
-    fontFamily: 'system-ui, sans-serif',
-  },
-  card: {
-    width: '100%',
-    maxWidth: '460px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '0',
-  },
-  headerRow: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '32px',
-  },
-  watermark: {
-    fontSize: '11px',
-    color: 'rgba(255,255,255,0.2)',
-    letterSpacing: '0.1em',
-    margin: '0',
-  },
-  signOutBtn: {
-    background: 'transparent',
-    border: 'none',
-    color: 'rgba(255,255,255,0.3)',
-    fontSize: '12px',
-    cursor: 'pointer',
-    padding: '0',
-  },
-  title: {
-    fontFamily: 'Georgia, serif',
-    fontSize: '44px',
-    color: '#fff',
-    margin: '0 0 8px',
-    fontWeight: '400',
-  },
-  subtitle: {
-    fontSize: '13px',
-    color: 'rgba(255,255,255,0.35)',
-    margin: '0 0 32px',
-  },
-  input: {
-    background: 'transparent',
-    border: 'none',
-    borderBottom: '1px solid rgba(255,255,255,0.25)',
-    color: '#fff',
-    fontSize: '18px',
-    padding: '8px 0 12px',
-    outline: 'none',
-    width: '100%',
-    marginBottom: '36px',
-    caretColor: 'white',
-  },
-  primaryBtn: {
-    background: '#fff',
-    color: '#0e0e0e',
-    border: 'none',
-    padding: '16px',
-    borderRadius: '32px',
-    fontSize: '18px',
-    cursor: 'pointer',
-    width: '100%',
-  },
-  section: {
-    marginBottom: '32px',
-  },
-  sectionTitle: {
-    fontSize: '10px',
-    color: 'rgba(255,255,255,0.3)',
-    letterSpacing: '0.1em',
-    textTransform: 'uppercase',
-    margin: '0 0 12px',
-  },
-  row: {
-    display: 'flex',
-    gap: '8px',
-  },
-  searchInput: {
-    flex: 1,
-    background: 'rgba(255,255,255,0.06)',
-    border: '1px solid rgba(255,255,255,0.15)',
-    borderRadius: '12px',
-    color: '#fff',
-    fontSize: '15px',
-    padding: '10px 14px',
-    outline: 'none',
-  },
-  generateBtn: {
-    background: '#fff',
-    color: '#0e0e0e',
-    border: 'none',
-    borderRadius: '12px',
-    padding: '10px 16px',
-    fontSize: '14px',
-    cursor: 'pointer',
-    fontWeight: '500',
-  },
-  tokenRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    padding: '10px 0',
-    borderBottom: '0.5px solid rgba(255,255,255,0.08)',
-  },
-  tokenSlug: {
-    fontSize: '14px',
-    color: '#fff',
-    margin: '0 0 3px',
-  },
-  tokenMeta: {
-    fontSize: '11px',
-    color: 'rgba(255,255,255,0.35)',
-    margin: '0',
-  },
-  tokenActions: {
-    display: 'flex',
-    gap: '6px',
-    flexShrink: 0,
-  },
-  copyBtn: {
-    background: 'rgba(255,255,255,0.1)',
-    border: '1px solid rgba(255,255,255,0.2)',
-    color: '#fff',
-    padding: '5px 12px',
-    borderRadius: '8px',
-    fontSize: '12px',
-    cursor: 'pointer',
-  },
-  revokeBtn: {
-    background: 'transparent',
-    border: '1px solid rgba(255,0,0,0.3)',
-    color: 'rgba(255,100,100,0.7)',
-    padding: '5px 12px',
-    borderRadius: '8px',
-    fontSize: '12px',
-    cursor: 'pointer',
-  },
-  empty: {
-    fontSize: '13px',
-    color: 'rgba(255,255,255,0.2)',
-    margin: '0',
-    letterSpacing: '0.04em',
-  },
-  refreshBtn: {
-    background: 'transparent',
-    border: '1px solid rgba(255,255,255,0.12)',
-    color: 'rgba(255,255,255,0.35)',
-    padding: '12px',
-    borderRadius: '12px',
-    fontSize: '13px',
-    cursor: 'pointer',
-    width: '100%',
-    marginTop: '8px',
-  },
+  container: { minHeight: '100vh', background: '#0e0e0e', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '40px 20px', fontFamily: 'system-ui, sans-serif' },
+  card: { width: '100%', maxWidth: '460px', display: 'flex', flexDirection: 'column', gap: '0' },
+  headerRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' },
+  watermark: { fontSize: '11px', color: 'rgba(255,255,255,0.2)', letterSpacing: '0.1em', margin: '0' },
+  signOutBtn: { background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.3)', fontSize: '12px', cursor: 'pointer', padding: '0' },
+  title: { fontFamily: 'Georgia, serif', fontSize: '44px', color: '#fff', margin: '0 0 8px', fontWeight: '400' },
+  subtitle: { fontSize: '13px', color: 'rgba(255,255,255,0.35)', margin: '0 0 32px' },
+  input: { background: 'transparent', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.25)', color: '#fff', fontSize: '18px', padding: '8px 0 12px', outline: 'none', width: '100%', marginBottom: '36px', caretColor: 'white' },
+  primaryBtn: { background: '#fff', color: '#0e0e0e', border: 'none', padding: '16px', borderRadius: '32px', fontSize: '18px', cursor: 'pointer', width: '100%' },
+  section: { marginBottom: '32px' },
+  sectionTitle: { fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 12px' },
+  row: { display: 'flex', gap: '8px' },
+  searchInput: { flex: 1, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '12px', color: '#fff', fontSize: '15px', padding: '10px 14px', outline: 'none' },
+  generateBtn: { background: '#fff', color: '#0e0e0e', border: 'none', borderRadius: '12px', padding: '10px 16px', fontSize: '14px', cursor: 'pointer', fontWeight: '500' },
+  tokenRow: { display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 0', borderBottom: '0.5px solid rgba(255,255,255,0.08)' },
+  tokenSlug: { fontSize: '14px', color: '#fff', margin: '0 0 3px' },
+  tokenMeta: { fontSize: '11px', color: 'rgba(255,255,255,0.35)', margin: '0' },
+  tokenActions: { display: 'flex', gap: '6px', flexShrink: 0 },
+  copyBtn: { background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', padding: '5px 12px', borderRadius: '8px', fontSize: '12px', cursor: 'pointer' },
+  revokeBtn: { background: 'transparent', border: '1px solid rgba(255,0,0,0.3)', color: 'rgba(255,100,100,0.7)', padding: '5px 12px', borderRadius: '8px', fontSize: '12px', cursor: 'pointer' },
+  empty: { fontSize: '13px', color: 'rgba(255,255,255,0.2)', margin: '0', letterSpacing: '0.04em' },
+  refreshBtn: { background: 'transparent', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.35)', padding: '12px', borderRadius: '12px', fontSize: '13px', cursor: 'pointer', width: '100%', marginTop: '8px' },
 };
